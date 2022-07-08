@@ -9,7 +9,11 @@ import {
   ShadowGenerator,
   Vector3,
 } from "@babylonjs/core";
-import { makeBoneHierarchyBase } from "../abstructBoneHierarchy";
+import {
+  getAnimationArray,
+  makeBoneHierarchyBase,
+} from "../abstructBoneHierarchy";
+import { beginWeightedAnimationByClip } from "../animationDriver";
 import {
   skeletalMeshAsyncLoader,
   skeletonAnimationAsyncLoader,
@@ -28,6 +32,7 @@ export const exsampleScene = async (scene: Scene): Promise<Scene> => {
   const [dummyBody, dummySkeleton] = await characterLoader("dummy2.babylon");
   dummyBody.receiveShadows = false;
   const boneHierarchyBase = makeBoneHierarchyBase(dummySkeleton, "dummy2SK");
+  // console.info(`SK hash: ${boneHierarchyBase.hash}`);
   const animationClip = await skeletonAnimationAsyncLoader(
     scene,
     "https://raw.githubusercontent.com/BabylonJS/Babylon.js/master/packages/tools/playground/public/scenes/",
@@ -77,5 +82,13 @@ export const exsampleScene = async (scene: Scene): Promise<Scene> => {
     return env;
   })(scene.createDefaultEnvironment({ enableGroundShadow: true }));
   // =====================================================================
+
+  beginWeightedAnimationByClip(scene)(animationClip)(
+    dummySkeleton,
+    90,
+    118,
+    1.0,
+    true
+  );
   return scene;
 };
