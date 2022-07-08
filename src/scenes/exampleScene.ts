@@ -19,6 +19,7 @@ import {
   skeletonAnimationAsyncLoader,
 } from "../loader";
 import { assertIsDefined } from "../main";
+import { mannequinCharacter } from "../mannequinCharacter";
 //
 
 export const exsampleScene = async (scene: Scene): Promise<Scene> => {
@@ -82,7 +83,13 @@ export const exsampleScene = async (scene: Scene): Promise<Scene> => {
     return env;
   })(scene.createDefaultEnvironment({ enableGroundShadow: true }));
   // =====================================================================
+  const character = mannequinCharacter(scene, camera, {
+    mesh: dummyBody,
+    skeleton: dummySkeleton,
+    animations: [animationClip],
+  });
 
+  /*
   const idleAnim = beginWeightedAnimationByClip(scene)(animationClip)(
     dummySkeleton,
     0,
@@ -100,5 +107,6 @@ export const exsampleScene = async (scene: Scene): Promise<Scene> => {
   const animTransitter = transitter(scene);
   const toWalk = animTransitter(3000, walkAnim, idleAnim);
   toWalk.start();
+  */
   return scene;
 };

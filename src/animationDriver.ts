@@ -104,7 +104,6 @@ export const transitter =
       toBeZero.weight -= delta;
     });
     timer.onTimerEndedObservable.add(() => {
-      console.info(`end timer`);
       toBeOne.weight = 1.0;
       toBeZero.weight = 0.0;
     });

@@ -21,3 +21,11 @@ export const characterAnimMachine = createMachine({
     },
   },
 });
+
+export const TransitPatterns = {
+  idleToMove: 0,
+  moveToIdle: 1,
+} as const;
+// eslint-disable-next-line no-redeclare
+export type TransitPatterns =
+  typeof TransitPatterns[keyof typeof TransitPatterns];
