@@ -103,7 +103,7 @@ type IsValiedSkeleton = (
   skeleton: Skeleton,
   boneHierarchy: BoneHierarchyBase
 ) => boolean;
-const isValiedSkeleton: IsValiedSkeleton = (
+export const isValiedSkeleton: IsValiedSkeleton = (
   skeleton: Skeleton,
   boneHierarchy: BoneHierarchyBase
 ) => {
@@ -163,4 +163,21 @@ export const makeSkeletonAnimationClip: MakeSkeletonAnimationClip = (
     skeletonAnimation: constructAnimation(rootBone, skeleton.getAnimatables()),
     baseHierarchy: boneHierarchy,
   };
+};
+
+type GetAnimationArray = (sac: SkeletonAnimationClip) => Animation[];
+export const getAnimationArray: GetAnimationArray = (sac) => {
+  const anims: Animation[] = [];
+  const travarseAnims = (node: HierarchicalAnimationNode) => {
+    if (node.children) {
+      node.children.forEach((canim) => {
+        travarseAnims(canim);
+      });
+      anims.push(node.animation);
+    } else {
+      anims.push(node.animation);
+    }
+  };
+  travarseAnims(sac.skeletonAnimation);
+  return anims;
 };
