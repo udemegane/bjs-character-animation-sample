@@ -12,7 +12,7 @@
 import { Bone, IAnimatable, Skeleton, Animation } from "@babylonjs/core";
 import { assertIsDefined } from "./main";
 
-type HierarchicalAnimationNode = {
+export type HierarchicalAnimationNode = {
   id: number;
   animation: Animation;
   children: HierarchicalAnimationNode[] | undefined;

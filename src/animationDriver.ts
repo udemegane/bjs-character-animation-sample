@@ -1,5 +1,6 @@
 import { Scene, Skeleton, Animatable, Bone } from "@babylonjs/core";
 import {
+  HierarchicalAnimationNode,
   isValiedSkeleton,
   SkeletonAnimationClip,
 } from "./abstructBoneHierarchy";
@@ -43,23 +44,30 @@ export const beginWeightedAnimationByClip: BeginWeightedAnimationByClip =
     assertIsDefined(rootBone);
     const animatable = new Animatable(
       scene,
-      rootBone,
+      undefined,
       from,
       to,
       loop,
       speedRatio,
       onAnimationEnd,
-      [sac.skeletonAnimation.animation],
+      [],
       onAnimationLoop,
       isAdditive
     );
-    /*
-      const appendAnimFromClip = (node: ) => {
-          if (bone.getChildren().length === 0) {
-            animatable.appendAnimations(bone, )
-          } else {
-              
-        }
-    } */
+
+    const appendAnimFromClip = (node: HierarchicalAnimationNode) => {
+      const bone = ((maybeBone) => {
+        assertIsDefined(maybeBone);
+        return maybeBone;
+      })(skeleton.bones[node.id]);
+      if (node.children) {
+        node.children.forEach((cnode) => appendAnimFromClip(cnode));
+        animatable.appendAnimations(bone, [node.animation]);
+      } else {
+        animatable.appendAnimations(bone, [node.animation]);
+      }
+    };
+    appendAnimFromClip(sac.skeletonAnimation);
+    // console.info(`anims num: ${animatable.getAnimations().length}`);
     return animatable;
   };
