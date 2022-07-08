@@ -1,4 +1,11 @@
-import { Scene, Skeleton, Animatable, Bone } from "@babylonjs/core";
+import {
+  Scene,
+  Skeleton,
+  Animatable,
+  Observable,
+  setAndStartTimer,
+  AdvancedTimer,
+} from "@babylonjs/core";
 import {
   HierarchicalAnimationNode,
   isValiedSkeleton,
@@ -54,7 +61,7 @@ export const beginWeightedAnimationByClip: BeginWeightedAnimationByClip =
       onAnimationLoop,
       isAdditive
     );
-
+    animatable.weight = weight;
     const appendAnimFromClip = (node: HierarchicalAnimationNode) => {
       const bone = ((maybeBone) => {
         assertIsDefined(maybeBone);
@@ -68,6 +75,49 @@ export const beginWeightedAnimationByClip: BeginWeightedAnimationByClip =
       }
     };
     appendAnimFromClip(sac.skeletonAnimation);
+
     // console.info(`anims num: ${animatable.getAnimations().length}`);
     return animatable;
+  };
+type BlendSpaceDimentionType = {
+  one: number;
+  two: { x: number; y: number };
+};
+type BlendSpace<T extends BlendSpaceDimentionType> = {
+  weight: T;
+  anims: { anim: Animatable; pos: T }[];
+};
+
+export const transitter =
+  (scene: Scene) =>
+  (time: number, toBeOne: Animatable, toBeZero: Animatable) => {
+    const getDeltaTime = () => {
+      return scene.getEngine().getDeltaTime();
+    };
+    const timer: AdvancedTimer<Scene> = new AdvancedTimer({
+      timeout: time,
+      contextObservable: scene.onBeforeRenderObservable,
+    });
+    timer.onEachCountObservable.add(() => {
+      const delta = 1 / (time / getDeltaTime());
+      toBeOne.weight += delta;
+      toBeZero.weight -= delta;
+    });
+    timer.onTimerEndedObservable.add(() => {
+      console.info(`end timer`);
+      toBeOne.weight = 1.0;
+      toBeZero.weight = 0.0;
+    });
+    timer.onTimerAbortedObservable.add(() => {
+      toBeOne.weight = 1.0;
+      toBeZero.weight = 0.0;
+    });
+    return {
+      start: () => {
+        timer.start();
+      },
+      stop: () => {
+        timer.stop();
+      },
+    };
   };
