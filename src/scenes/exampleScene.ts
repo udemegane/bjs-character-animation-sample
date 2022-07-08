@@ -9,11 +9,16 @@ import {
   ShadowGenerator,
   Vector3,
 } from "@babylonjs/core";
-import { skeletalMeshAsyncLoader } from "../loader";
+import { makeBoneHierarchyBase } from "../abstructBoneHierarchy";
+import {
+  skeletalMeshAsyncLoader,
+  skeletonAnimationAsyncLoader,
+} from "../loader";
 import { assertIsDefined } from "../main";
 //
 
 export const exsampleScene = async (scene: Scene): Promise<Scene> => {
+  // scene.getEngine().displayLoadingUI();
   // initialize Scene
   // =====================================================================
   const characterLoader = skeletalMeshAsyncLoader(
@@ -22,6 +27,13 @@ export const exsampleScene = async (scene: Scene): Promise<Scene> => {
   );
   const [dummyBody, dummySkeleton] = await characterLoader("dummy2.babylon");
   dummyBody.receiveShadows = false;
+  const boneHierarchyBase = makeBoneHierarchyBase(dummySkeleton, "dummy2SK");
+  const animationClip = await skeletonAnimationAsyncLoader(
+    scene,
+    "https://raw.githubusercontent.com/BabylonJS/Babylon.js/master/packages/tools/playground/public/scenes/",
+    boneHierarchyBase
+  )("dummy2.babylon");
+
   const camera: ArcRotateCamera = ((camera) => {
     camera.attachControl(true);
     camera.lowerRadiusLimit = 2.0;
@@ -65,6 +77,5 @@ export const exsampleScene = async (scene: Scene): Promise<Scene> => {
     return env;
   })(scene.createDefaultEnvironment({ enableGroundShadow: true }));
   // =====================================================================
-
   return scene;
 };
