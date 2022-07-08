@@ -13,7 +13,7 @@ import {
   getAnimationArray,
   makeBoneHierarchyBase,
 } from "../abstructBoneHierarchy";
-import { beginWeightedAnimationByClip } from "../animationDriver";
+import { beginWeightedAnimationByClip, transitter } from "../animationDriver";
 import {
   skeletalMeshAsyncLoader,
   skeletonAnimationAsyncLoader,
@@ -83,12 +83,22 @@ export const exsampleScene = async (scene: Scene): Promise<Scene> => {
   })(scene.createDefaultEnvironment({ enableGroundShadow: true }));
   // =====================================================================
 
-  beginWeightedAnimationByClip(scene)(animationClip)(
+  const idleAnim = beginWeightedAnimationByClip(scene)(animationClip)(
     dummySkeleton,
-    90,
-    118,
+    0,
+    89,
     1.0,
     true
   );
+  const walkAnim = beginWeightedAnimationByClip(scene)(animationClip)(
+    dummySkeleton,
+    90,
+    118,
+    0.0,
+    true
+  );
+  const animTransitter = transitter(scene);
+  const toWalk = animTransitter(3000, walkAnim, idleAnim);
+  toWalk.start();
   return scene;
 };
