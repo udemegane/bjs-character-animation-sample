@@ -57,8 +57,18 @@ export class PowerSkeleton {
   }
 
   public getAnimationClip(): SkeletalAnimation {}
-  public createLinkedTransformNode(): TransformNode {}
+
+  public createLinkedTransformNode(): TransformNode[] {
+    const scene = this.skeleton.getScene();
+    return this.skeleton.bones.map((bone) => {
+      const node = new TransformNode(bone.name, scene, true);
+      bone.linkTransformNode(node);
+      return node;
+    });
+  }
+
   public isValiedAnimation(anim: SkeletalAnimation): boolean {}
+
   private _makeSkeletonHash(skeleton: Skeleton): SkeletonHash[] {
     const constructHash = (bone: Bone): SkeletonHash[] => {
       if (bone.children.length === 0) {
@@ -115,7 +125,29 @@ export class PowerSkeleton {
   private _isValiedSkeleton(
     hash_1: SkeletonHash[],
     hash_2: SkeletonHash[]
-  ): boolean {}
+  ): boolean {
+    const [longerHash, shooterHash] = (() => {
+      if (hash_1.length > hash_2.length) {
+        return [hash_1, hash_2];
+      } else {
+        return [hash_2, hash_1];
+      }
+    })();
+    const hashSequence = (hash=>{
+      function* gen(){
+        yield* hash
+      };
+      return gen()
+    })(longerHash)
+    shooterHash.forEach((elm) => {
+      const 
+      if(elm.value === ){
+
+      }else{
+
+      }
+    });
+  }
 
   private _setBaseId(
     hash: SkeletonHash[],
