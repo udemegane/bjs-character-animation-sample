@@ -25,8 +25,8 @@ export class PowerSkeleton {
     // 元スケルトンがない場合、自身をそれに設定
     if (!basePowerSkeleton) {
       this.basePowerSkeleton = this;
+      hash.forEach((h) => (h.baseId = h.id));
       this.skeletonHash = hash.map((h) => Object.freeze(h));
-
       this.groupId = uuid();
     } else {
       // 元スケルトンがある場合、互換性があるか確認
@@ -180,19 +180,69 @@ export class PowerSkeleton {
               isValied = false;
               break;
             }
+          } else {
+            continue;
           }
         }
       }
     }
     return isValied;
   }
-  /*
+
   private _setBaseId(
     hash: SkeletonHash[],
     baseHash: SkeletonHash[]
   ): SkeletonHash[] {
-
+    let i = 0;
+    let ib = 0;
+    const isLongerThanBase = hash.length > baseHash.length;
+    const max = isLongerThanBase ? hash.length : baseHash.length;
+    while (!(i >= max || ib >= max)) {
+      const h = hash[i];
+      const hb = baseHash[ib];
+      assertIsDefined(h);
+      assertIsDefined(hb);
+      if (h.value === hb.value) {
+        h.baseId = hb.id;
+        i++;
+        ib++;
+      } else {
+        let surplus = 0;
+        if (isLongerThanBase) {
+          while (1) {
+            const h = hash[i];
+            assertIsDefined(h);
+            if (h.value === "(") {
+              surplus++;
+            } else {
+              surplus--;
+            }
+            if (surplus < 0) {
+              break;
+            } else {
+              i++;
+            }
+          }
+        } else {
+          while (1) {
+            const hb = baseHash[ib];
+            assertIsDefined(hb);
+            if (hb.value === "(") {
+              surplus++;
+            } else {
+              surplus--;
+            }
+            if (surplus < 0) {
+              break;
+            } else {
+              ib++;
+            }
+          }
+        }
+      }
+    }
+    return hash;
   }
-*/
+
   // private _
 }
