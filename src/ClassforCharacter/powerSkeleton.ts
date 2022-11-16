@@ -3,8 +3,8 @@ import { Bone, Skeleton, TransformNode } from "@babylonjs/core";
 import { assertIsDefined } from "../main";
 import { SkeletalAnimation } from "./skeletonAnimation";
 export type SkeletonHash = {
-  id: number;
-  baseId: number;
+  id: number; // このスケルトンのボーンのid
+  baseId: number; // ベーススケルトンのボーンのid
   value: "(" | ")";
 };
 const uuid = () =>
@@ -22,12 +22,14 @@ export class PowerSkeleton {
   constructor(skeleton: Skeleton, basePowerSkeleton?: PowerSkeleton) {
     this.skeleton = skeleton;
     const hash = this._makeSkeletonHash(skeleton);
+    // 元スケルトンがない場合、自身をそれに設定
     if (!basePowerSkeleton) {
       this.basePowerSkeleton = this;
       this.skeletonHash = hash.map((h) => Object.freeze(h));
 
       this.groupId = uuid();
     } else {
+      // 元スケルトンがある場合、互換性があるか確認
       if (this._isValiedSkeleton(hash, basePowerSkeleton.skeletonHash)) {
         this.basePowerSkeleton = basePowerSkeleton;
 
@@ -47,7 +49,8 @@ export class PowerSkeleton {
   /**
    * mergeSkeletons
    */
-  public static mergeSkeletons(skeletons: PowerSkeleton[]): PowerSkeleton {
+  /*
+  public static MergeSkeletons(skeletons: PowerSkeleton[]): PowerSkeleton {
     const groupIdList = skeletons.map((s) => s.groupId);
     if (!groupIdList.every((id) => id === groupIdList[0])) {
       throw new Error(
@@ -55,8 +58,9 @@ export class PowerSkeleton {
       );
     }
   }
+  */
 
-  public getAnimationClip(): SkeletalAnimation {}
+  // public getAnimationClip(): SkeletalAnimation {}
 
   public createLinkedTransformNode(): TransformNode[] {
     const scene = this.skeleton.getScene();
@@ -67,7 +71,7 @@ export class PowerSkeleton {
     });
   }
 
-  public isValiedAnimation(anim: SkeletalAnimation): boolean {}
+  // public isValiedAnimation(anim: SkeletalAnimation): boolean {}
 
   private _makeSkeletonHash(skeleton: Skeleton): SkeletonHash[] {
     const constructHash = (bone: Bone): SkeletonHash[] => {
@@ -133,26 +137,62 @@ export class PowerSkeleton {
         return [hash_2, hash_1];
       }
     })();
-    const hashSequence = (hash=>{
-      function* gen(){
-        yield* hash
-      };
-      return gen()
-    })(longerHash)
-    shooterHash.forEach((elm) => {
-      const 
-      if(elm.value === ){
-
-      }else{
-
+    const hashSequence = ((hash) => {
+      function* gen() {
+        yield* hash;
       }
-    });
-  }
+      return gen();
+    })(longerHash);
 
+    let isValied = true;
+    // 小さいほうのスケルトンが大きいスケルトンのサブセットであることを確認する
+    for (let i = 0; i < shooterHash.length; i++) {
+      const hshooter = shooterHash[i];
+      assertIsDefined(hshooter);
+      const next = hashSequence.next();
+      if (next.done) {
+        break;
+      }
+      const hlonger = next.value;
+      if (hshooter.value === hlonger.value) {
+        continue;
+      } else {
+        // ここの節は、一致しないハッシュから始まるボーン階層が簡潔したサブツリーであることを確認し、
+        // それを取り除いた部分が一致するか考える
+        let surplus = hlonger.value === "(" ? 1 : -1;
+        while (1) {
+          const next = hashSequence.next();
+          if (next.done) {
+            break;
+          }
+          const hlonger = next.value;
+          if (hlonger.value === "(") {
+            surplus++;
+          } else {
+            surplus--;
+          }
+          if (surplus < 0) {
+            const hshooterNext = shooterHash[++i];
+            assertIsDefined(hshooterNext);
+            if (hshooterNext.value === next.value.value) {
+              continue;
+            } else {
+              isValied = false;
+              break;
+            }
+          }
+        }
+      }
+    }
+    return isValied;
+  }
+  /*
   private _setBaseId(
     hash: SkeletonHash[],
     baseHash: SkeletonHash[]
-  ): SkeletonHash[] {}
+  ): SkeletonHash[] {
 
+  }
+*/
   // private _
 }
