@@ -5,6 +5,7 @@ import {
   SceneLoader,
   Skeleton,
   Bone,
+  Animation,
 } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import { assertIsDefined, colors } from "../main";
@@ -23,6 +24,11 @@ type SkeletonMetadata = {
   groupId: string;
   name: string;
   type: "Animation" | "Model";
+};
+type SkeletalAnimationNode = {
+  id: number;
+  baseId: number;
+  animation: Animation;
 };
 export class SkeletonAnalyzer {
   public static AnalyzeFromFileAsync(
@@ -53,7 +59,8 @@ export class SkeletonAnalyzer {
           `Check Bone hieralchy compatibility of ${skeleton.name} and ${baseSkeleton.name}...`
         )
       );
-      if (SkeletonAnalyzer._isValiedSkeleton(hash, baseSkeleton.bones)) {
+
+      if (SkeletonAnalyzer._IsValiedSkeleton(hash, baseSkeleton.bones)) {
         console.info(colors.green(`Compatible!`));
         return Object.freeze({
           bones: hash,
@@ -130,7 +137,8 @@ export class SkeletonAnalyzer {
     return constructHash(rootBone);
   }
 
-  private static _isValiedSkeleton(
+  private static _ExtractAnimation(skeleton: Skeleton) {}
+  private static _IsValiedSkeleton(
     hash1: BoneHash[],
     hash2: BoneHash[]
   ): boolean {
