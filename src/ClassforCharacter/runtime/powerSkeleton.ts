@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import { Bone, Skeleton, TransformNode } from "@babylonjs/core";
 import { SkeletalAnimation } from "./skeletonAnimation";
-import { assertIsDefined } from "../main";
+import { assertIsDefined } from "../../main";
 export type SkeletonHash = {
   id: number; // このスケルトンのボーンのid
   baseId: number; // ベーススケルトンのボーンのid
@@ -75,7 +75,7 @@ export class PowerSkeleton {
     return this.groupId === anim.groupId;
   }
 
-  private _makeSkeletonHash(skeleton: Skeleton): SkeletonHash[] {
+  public _makeSkeletonHash(skeleton: Skeleton): SkeletonHash[] {
     const constructHash = (bone: Bone): SkeletonHash[] => {
       if (bone.children.length === 0) {
         return [

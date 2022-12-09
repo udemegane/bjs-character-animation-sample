@@ -8,7 +8,7 @@ import {
   Animation,
 } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
-import { assertIsDefined, colors } from "../main";
+import { assertIsDefined, colors } from "../../main";
 
 type BoneHash = {
   id: number; // このスケルトンのボーンのid
@@ -75,7 +75,6 @@ export class SkeletonAnalyzer {
       }
     }
     console.info(colors.white(`Make new skeleton group id.`));
-    console.info(colors.white(`Done.`));
     return Object.freeze({
       bones: hash,
       groupId: uuid(),

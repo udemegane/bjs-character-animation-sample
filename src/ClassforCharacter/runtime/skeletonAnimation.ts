@@ -1,5 +1,5 @@
 import { Bone, IAnimatable, Animation } from "@babylonjs/core";
-import { assertIsDefined } from "../main";
+import { assertIsDefined } from "../../main";
 import { PowerSkeleton, SkeletonHash } from "./powerSkeleton";
 
 type HierarchicalAnimationNode = {
