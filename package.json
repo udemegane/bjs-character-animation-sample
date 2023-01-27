@@ -1,6 +1,5 @@
 {
-  "name": "babylonjs-npm-template",
-  "description": "",
+  "name": "babylonjs-character-animation-sample",
   "scripts": {
     "start": "npx webpack serve",
     "build": "webpack --mode production "
