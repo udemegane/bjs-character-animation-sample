@@ -26,7 +26,8 @@ type AnimatedCharacterComponent = {
 type MannequinCharacter = (
   scene: Scene,
   camera: TargetCamera,
-  components: AnimatedCharacterComponent
+  components: AnimatedCharacterComponent,
+  useRight: boolean
 ) => void;
 
 export const StatePatterns = {
@@ -97,7 +98,8 @@ const setupAnimation = (
 export const mannequinCharacter: MannequinCharacter = (
   scene,
   camera,
-  components
+  components,
+  useRight
 ) => {
   const animsClip = components.animations[0];
   assertIsDefined(animsClip);
@@ -108,14 +110,16 @@ export const mannequinCharacter: MannequinCharacter = (
   );
   (() => {
     const advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI(
-      "SimpleUI",
+      useRight ? "UIRight" : "UILeft",
       true,
       scene
     );
     const UiPanel = new StackPanel();
     UiPanel.width = "250px";
     UiPanel.fontSize = "14px";
-    UiPanel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
+    UiPanel.horizontalAlignment = useRight
+      ? Control.HORIZONTAL_ALIGNMENT_RIGHT
+      : Control.HORIZONTAL_ALIGNMENT_LEFT;
     UiPanel.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
     advancedTexture.addControl(UiPanel);
     const toWalk = Button.CreateSimpleButton("toWalk", "To Walk");
